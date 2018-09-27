@@ -20,10 +20,10 @@ kernel_edges = np.array([
 
 # 模糊
 kernel_blur = np.array([
-	[2, 2, 2],
-	[2, 2, 2],
-	[2, 2, 2]
-	]) / 18.0
+	[3, 3, 3],
+	[3, 3, 3],
+	[3, 3, 3]
+	]) / 27.0
 
 # 浮雕
 kernel_emboss = np.array([
