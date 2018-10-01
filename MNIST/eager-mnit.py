@@ -1,5 +1,6 @@
 import tensorflow as tf 
 import tensorflow.contrib.eager as tfe 
+import os
 tfe.enable_eager_execution()
 
 import input_data
@@ -46,6 +47,13 @@ class MNIST:
 		print("Test accuracy = {:.2%}".format(self.accuracy.numpy()))
 
 if __name__ == '__main__':
+
+	os.environ['CUDA_VISIBLE_DEVICES'] = '0'
+	config = tf.ConfigProto()
+	config.gpu_options.per_process_gpu_memory_fraction = 0.5
+	config.gpu_options.allow_growth = True
+	sess = tf.Session(config = config)
+
 	mnist_model = MNIST()
 	mnist_model.train()
 	mnist_model.evaluate()

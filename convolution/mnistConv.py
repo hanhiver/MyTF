@@ -1,4 +1,5 @@
 import tensorflow as tf 
+import os
 import input_data
 from matplotlib import pyplot as plt 
 
@@ -11,7 +12,11 @@ print(mnist.validation.images.shape, mnist.validation.labels.shape)
 """
 
 # 显示制定当前交互式会话
-sess = tf.InteractiveSession()
+os.environ['CUDA_VISIBLE_DEVICES'] = '0'
+sess_conf = tf.ConfigProto()
+sess_conf.gpu_options.per_process_gpu_memory_fraction = 0.5
+sess_conf.gpu_options.allow_growth = True
+sess = tf.InteractiveSession(config = sess_conf)
 
 # 权重值初始化函数
 # 使用truncated_normal来初始化一个阶段正态分布的权重值，避免零梯度产生。
@@ -89,10 +94,10 @@ correct_prediction = tf.equal(tf.argmax(y_conv, 1), tf.argmax(y_, 1))
 accuracy = tf.reduce_mean(tf.cast(correct_prediction, 'float64'))
 sess.run(tf.initialize_all_variables())
 
-for i in range(100):
-	batch = mnist.train.next_batch(50)
+for i in range(1000):
+	batch = mnist.train.next_batch(100)
 
-	if i % 10 == 0:
+	if i % 100 == 0:
 		train_accurarcy = accuracy.eval(feed_dict = {
 			x:batch[0], y_:batch[1], keep_prob:1.0
 			})
@@ -101,10 +106,10 @@ for i in range(100):
 	train_step.run(feed_dict = {
 		x:batch[0], y_:batch[1], keep_prob:0.5
 		})
-
+"""
 print("test accuracy %g" % accuracy.eval(feed_dict={
     x: mnist.test.images, y_: mnist.test.labels, keep_prob: 1.0}))
-
+"""
 
 
 

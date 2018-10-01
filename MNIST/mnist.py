@@ -1,6 +1,8 @@
 import tensorflow as tf 
+import os
 import input_data
 from matplotlib import pyplot as plt 
+
 
 """
 from tensorflow.examples.tutorials.mnist import input_data
@@ -52,7 +54,15 @@ cross_entropy = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(labels = 
 
 train_step = tf.train.GradientDescentOptimizer(0.5).minimize(cross_entropy)
 
-sess = tf.InteractiveSession()
+
+os.environ['CUDA_VISIBLE_DEVICES'] = '0'
+config = tf.ConfigProto()
+config.gpu_options.per_process_gpu_memory_fraction = 0.5
+config.gpu_options.allow_growth = True
+#sess = tf.Session(config = config)
+
+sess = tf.InteractiveSession(config = config)
+
 tf.global_variables_initializer().run()
 
 for _ in range(1000):
