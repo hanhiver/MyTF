@@ -15,6 +15,7 @@ keras.backend.set_session(sess)
 import numpy as np 
 
 print(tf.__version__)
+print("Test")
 
 """
 # Download the IMDB data.
