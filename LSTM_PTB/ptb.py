@@ -1,3 +1,8 @@
+""" 
+LSTM test program. 
+Dong Han 2018.10.05
+"""
+
 import os
 
 import tensorflow as tf 
