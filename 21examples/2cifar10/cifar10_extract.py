@@ -32,7 +32,7 @@ if __name__ == '__main__':
 		if not os.path.exists('cifar10_data/raw/'):
 			os.makedirs('cifar10_data/raw/')
 
-		for i in range(30):
+		for i in range(30): 
 			image_array = sess.run(reshaped_image)
 			scipy.misc.toimage(image_array).save('cifar10_data/raw/%d.jpg' % i)
 
