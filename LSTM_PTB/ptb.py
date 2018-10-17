@@ -11,6 +11,8 @@ import numpy as np
 
 import reader
 
+import time
+
 
 DATA_PATH = './data/'
 VOCAB_SIZE = 10000
@@ -108,6 +110,8 @@ def run_epoch(session, model, data, train_op, output_log, epoch_size):
 	iters = 0
 	state = session.run(model.initial_state)
 
+	stime = time.time()
+	
 	for step in range(epoch_size):
 		x, y = session.run(data)
 
@@ -120,8 +124,10 @@ def run_epoch(session, model, data, train_op, output_log, epoch_size):
 		iters += model.num_steps
 
 		if output_log and step % 100 == 0:
-			print('After {} steps, perplexity is {}.'.format(step, np.exp(total_costs / iters)))
-
+			ctime = time.time()
+			print('After {} steps, {} seconds, perplexity is {}.'.format(step, (ctime - stime), np.exp(total_costs / iters)))
+			stime = ctime
+			
 	return np.exp(total_costs / iters)
 
 
