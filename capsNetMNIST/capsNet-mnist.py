@@ -276,6 +276,9 @@ with tf.Session() as sess:
 	else:
 		init.run()
 
+	print(" Train the model with training data. ")
+	pritn("=====================================\n")
+
 	for epoch in range(n_epochs):
 		for iteration in range(1, n_iterations_per_epoch + 1):
 			X_batch, y_batch = mnist.train.next_batch(batch_size)
@@ -313,7 +316,7 @@ with tf.Session() as sess:
 
 		loss_val = np.mean(loss_vals)
 		acc_val = np.mean(acc_vals)
-		print("\rEpoch: {}  Val accuracy: {:.4f}%  Loss: {:.6f}{}".format(
+		print("Epoch: {}  Val accuracy: {:.4f}%  Loss: {:.6f}{}".format(
 			epoch + 1, acc_val * 100, loss_val,
 			" (improved)" if loss_val < best_loss_val else ""))
 
@@ -330,6 +333,10 @@ with tf.Session() as sess:
 
 	loss_tests = []
 	acc_tests = []
+
+	print(" Evaluating the model with test data. ")
+	pritn("=====================================\n")
+
 	for iteration in range(1, n_iterations_test + 1):
 		X_batch, y_batch = mnist.test.next_batch(batch_size)
 		loss_test, acc_test = sess.run(
@@ -338,7 +345,7 @@ with tf.Session() as sess:
 							  y: y_batch})
 		loss_tests.append(loss_test)
 		acc_tests.append(acc_test)
-		print("Evaluating the model: {}/{} ({:.5f}%".format(
+		print("\rEvaluating the model: {}/{} ({:.5f}%".format(
 			iteration, 
 			n_iterations_test, 
 			iteration * 100 / n_iterations_test), 
