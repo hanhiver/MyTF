@@ -338,7 +338,7 @@ with tf.Session() as sess:
 							  y: y_batch})
 		loss_tests.append(loss_test)
 		acc_tests.append(acc_test)
-		print("\rEvaluating the model: {}/{} ({:.5f}%".format(
+		print("Evaluating the model: {}/{} ({:.5f}%".format(
 			iteration, 
 			n_iterations_test, 
 			iteration * 100 / n_iterations_test), 
@@ -346,5 +346,5 @@ with tf.Session() as sess:
 
 	loss_test = np.mean(loss_tests)
 	acc_test = np.mean(acc_tests)
-	print("\rFinal test accuracy: {:.4f}%   Loss: {:.6f}".format(
+	print("Final test accuracy: {:.4f}%   Loss: {:.6f}".format(
 		acc_test * 100, loss_test))
