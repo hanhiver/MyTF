@@ -261,7 +261,7 @@ saver = tf.train.Saver()
 
 # 训练模型
 n_epochs = 3
-batch_size = 50
+batch_size = 100
 restore_checkpoint = False
 
 n_iterations_per_epoch = mnist.train.num_examples // batch_size
