@@ -128,13 +128,13 @@ for i in range(routing_num):
 caps2_output = vj 
 
 # 求预测向量长度
-def saf_norm(s, axis = -1, epsilon = 1e-7, keep_dims = False, name = None):
+def safe_norm(s, axis = -1, epsilon = 1e-7, keep_dims = False, name = None):
 	with tf.name_scope(name, default_name = 'safe_norm'):
 		squared_norm = tf.reduce_sum(tf.square(s), axis = axis, 
 									keep_dims = keep_dims)
 		return tf.sqrt(squared_norm + epsilon)
 
-y_proba = saf_norm(vj, axis = -2, name = 'y_proba')
+y_proba = safe_norm(vj, axis = -2, name = 'y_proba')
 y_proba_argmax = tf.argmax(y_proba, axis = 2, name = 'y_proba')
 y_pred = tf.squeeze(y_proba_argmax, axis = [1, 2], name = 'y_pred')
 
@@ -220,7 +220,7 @@ with tf.name_scope("decoder"):
 		activation = tf.nn.relu,
 		name = 'hidden1')
 
-	hidden2 = tf.layer.dense(
+	hidden2 = tf.layers.dense(
 		hidden1, 
 		n_hidden2,
 		activation = tf.nn.relu, 
