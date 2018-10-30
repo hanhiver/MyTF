@@ -318,9 +318,9 @@ with tf.Session() as sess:
 
 		loss_val = np.mean(loss_vals)
 		acc_val = np.mean(acc_vals)
-		print("Epoch: {}  Val accuracy: {:.4f}%  Loss: {:.6f}{}".format(
+		print("\nEpoch: {}  Val accuracy: {:.4f}%  Loss: {:.6f}{}".format(
 			epoch + 1, acc_val * 100, loss_val,
-			" (improved)" if loss_val < best_loss_val else ""))
+			" (improved)\n" if loss_val < best_loss_val else "(not improved)\n"))
 
 		# 如果准确度有进步，保存模型。
 		if loss_val < best_loss_val: 
@@ -355,5 +355,5 @@ with tf.Session() as sess:
 
 	loss_test = np.mean(loss_tests)
 	acc_test = np.mean(acc_tests)
-	print("Final test accuracy: {:.4f}%   Loss: {:.6f}".format(
+	print("\nFinal test accuracy: {:.4f}%   Loss: {:.6f}".format(
 		acc_test * 100, loss_test))
