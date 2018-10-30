@@ -268,7 +268,7 @@ n_iterations_validation = mnist.validation.num_examples // batch_size
 
 print("-----", n_iterations_validation)
 best_loss_val = np.infty
-checkpoint_path = '/tmp/my_capsule_network'
+checkpoint_path = '/tmp/capsNetMnist/my_capsule_network'
 
 with tf.Session() as sess:
 	if restore_checkpoint and tf.train.checkpoint_exists(checkpoint_path):
