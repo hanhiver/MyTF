@@ -3,6 +3,7 @@ CapsNet-mnist.py
 Function: Tensorflow实现胶囊神经网络识别MNIST数据集。
 Dong Han 2018.10.30
 """
+import os 
 
 import numpy as np 
 import tensorflow as tf 
