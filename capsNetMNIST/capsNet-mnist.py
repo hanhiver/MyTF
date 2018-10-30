@@ -270,6 +270,9 @@ print("-----", n_iterations_validation)
 best_loss_val = np.infty
 checkpoint_path = '/tmp/capsNetMnist/my_capsule_network'
 
+if not os.path.exists(checkpoint_path):
+	os.makedirs(checkpoint_path)
+
 with tf.Session() as sess:
 	if restore_checkpoint and tf.train.checkpoint_exists(checkpoint_path):
 		saver.restore(sess, checkpoint_path)
