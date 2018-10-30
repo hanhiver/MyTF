@@ -337,7 +337,7 @@ with tf.Session() as sess:
 	acc_tests = []
 
 	print(" Evaluating the model with test data. ")
-	pritn("=====================================\n")
+	print("=====================================\n")
 
 	for iteration in range(1, n_iterations_test + 1):
 		X_batch, y_batch = mnist.test.next_batch(batch_size)
