@@ -347,7 +347,7 @@ with tf.Session() as sess:
 							  y: y_batch})
 		loss_tests.append(loss_test)
 		acc_tests.append(acc_test)
-		print("\rEvaluating the model: {}/{} ({:.5f}%".format(
+		print("\rEvaluating the model: {}/{} ({:.3f})%".format(
 			iteration, 
 			n_iterations_test, 
 			iteration * 100 / n_iterations_test), 
