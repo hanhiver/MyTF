@@ -279,7 +279,7 @@ with tf.Session() as sess:
 		init.run()
 
 	print(" Train the model with training data. ")
-	pritn("=====================================\n")
+	print("=====================================\n")
 
 	for epoch in range(n_epochs):
 		for iteration in range(1, n_iterations_per_epoch + 1):
