@@ -262,7 +262,7 @@ saver = tf.train.Saver()
 # 训练模型
 n_epochs = 3
 batch_size = 50
-restore_checkpoint = True
+restore_checkpoint = False
 
 n_iterations_per_epoch = mnist.train.num_examples // batch_size
 n_iterations_validation = mnist.validation.num_examples // batch_size
@@ -271,8 +271,6 @@ print("-----", n_iterations_validation)
 best_loss_val = np.infty
 checkpoint_path = '/tmp/capsNetMnist/my_capsule_network'
 
-if not os.path.exists(checkpoint_path):
-	os.makedirs(checkpoint_path)
 
 with tf.Session() as sess:
 	if restore_checkpoint and tf.train.checkpoint_exists(checkpoint_path):
