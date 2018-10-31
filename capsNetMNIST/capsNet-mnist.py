@@ -10,6 +10,10 @@ import tensorflow as tf
 
 import input_data 
 
+# 经典MNIST数据
+mnist = input_data.read_data_sets("../MNIST/MNIST_data/")
+
+# 流行MNIST数据
 mnist = input_data.read_data_sets("../MNIST/MNIST_data/")
 
 print(mnist.train.images.shape, mnist.train.labels.shape)
@@ -278,8 +282,8 @@ with tf.Session() as sess:
 	else:
 		init.run()
 
-	print("\033[0;31m%s\033[0m" % " Train the model with training data. ")
-	print("\033[0;31m%s\033[0m" % "=====================================\n")
+	print("\033[0;31m%s\033[0m" % "\n Train the model with training data. ")
+	print("\033[0;31m%s\033[0m" % "=====================================")
 
 	for epoch in range(n_epochs):
 		for iteration in range(1, n_iterations_per_epoch + 1):
@@ -336,8 +340,8 @@ with tf.Session() as sess:
 	loss_tests = []
 	acc_tests = []
 
-	print("\033[0;31m%s\033[0m" % " Evaluating the model with test data. ")
-	print("\033[0;31m%s\033[0m" % "=====================================\n")
+	print("\033[0;31m%s\033[0m" % "\n Evaluating the model with test data. ")
+	print("\033[0;31m%s\033[0m" % "=====================================")
 
 	for iteration in range(1, n_iterations_test + 1):
 		X_batch, y_batch = mnist.test.next_batch(batch_size)
