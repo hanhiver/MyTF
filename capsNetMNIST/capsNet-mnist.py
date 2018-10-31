@@ -14,7 +14,7 @@ import input_data
 mnist = input_data.read_data_sets("../MNIST/MNIST_data/")
 
 # 流行MNIST数据
-mnist = input_data.read_data_sets("../MNIST/MNIST_data/")
+# mnist = input_data.read_data_sets("../fashionMNIST/fashionMNIST/")
 
 print(mnist.train.images.shape, mnist.train.labels.shape)
 print(mnist.test.images.shape, mnist.test.labels.shape)
