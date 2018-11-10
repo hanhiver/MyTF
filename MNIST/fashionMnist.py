@@ -107,7 +107,7 @@ cp_callback = tf.keras.callbacks.ModelCheckpoint(
 	)
 
 # Train the model.
-model.fit(train_images, train_labels, epochs = 5,
+model.fit(train_images, train_labels, epochs = 1,
 	validation_data = (test_images, test_labels),
 	callbacks = [cp_callback]
 	)
