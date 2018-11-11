@@ -6,7 +6,7 @@ from tensorflow import keras
 # Use 50% gpu memory. 
 # import tensorflow.keras.backend.tensorflow_backend as ktf
 os.environ['CUDA_VISIBLE_DEVICES'] = '0'
-config = tf.ConfigProto(log_device_placement = True)
+config = tf.ConfigProto(log_device_placement = False)
 config.gpu_options.per_process_gpu_memory_fraction = 0.5
 config.gpu_options.allow_growth = True
 sess = tf.Session(config = config)
@@ -24,7 +24,7 @@ model.add(keras.layers.Dense(16, activation = tf.nn.relu, input_dim = 2))
 model.add(keras.layers.Dense(16, activation = tf.nn.relu))
 model.add(keras.layers.Dense(1, activation = tf.nn.sigmoid))
 
-optimizer = keras.optimizers.SGD(lr = 0.1, decay = 1e-6, momentum = 0.9, nesterov = True)
+optimizer = keras.optimizers.SGD(lr = 0.1, decay = 1e-5, momentum = 0.9, nesterov = True)
 #optimizer = 'sgd'
 
 loss = 'mse'
@@ -51,11 +51,12 @@ history = model.fit(
 	x_train, 
 	y_labels, 
 	batch_size = 4,
-	epochs = 200, 
+	epochs = 500, 
 	verbose = 2, 
 	)
 
-plt.scatter(range(len(history.history['loss'])), history.history['loss'])
+#plt.scatter(range(len(history.history['loss'])), history.history['loss'])
+plt.plot(range(len(history.history['loss'])), history.history['loss'])
 
 """
 loss_metrics = model.evaluate(x_train, y_labels, batch_size = 1)

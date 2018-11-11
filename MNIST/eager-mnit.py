@@ -50,7 +50,7 @@ if __name__ == '__main__':
 
 	os.environ['CUDA_VISIBLE_DEVICES'] = '0'
 	config = tf.ConfigProto()
-	config.gpu_options.per_process_gpu_memory_fraction = 0.5
+	config.gpu_options.per_process_gpu_memory_fraction = 0.9
 	config.gpu_options.allow_growth = True
 	sess = tf.Session(config = config)
 
