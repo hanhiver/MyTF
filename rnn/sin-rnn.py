@@ -80,7 +80,7 @@ with tf.Session(config = config) as sess:
 	sess.run(tf.global_variables_initializer())
 	_current_state = np.zeros((batch_size, state_size))
 
-	for epoch_id in range(31):
+	for epoch_id in range(101):
 		for batch_id in range(len(train_x) // batch_size):
 			begin = batch_id * batch_size
 			end = begin + batch_size
