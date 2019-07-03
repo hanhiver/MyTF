@@ -26,11 +26,6 @@ print(tf.__version__)
 # fashion_mnist = keras.datasets.fashion_mnist
 fashion_mnist = input_data.read_data_sets("./MNIST_data/", one_hot = True)
 
-"""
-print(fashion_mnist.train.images.shape, fashion_mnist.train.labels.shape)
-print(fashion_mnist.test.images.shape, fashion_mnist.test.labels.shape)
-print(fashion_mnist.validation.images.shape, fashion_mnist.validation.labels.shape)
-"""
 
 train_images = fashion_mnist.train.images.reshape([-1, 28, 28])
 train_labels = fashion_mnist.train.labels
@@ -41,46 +36,7 @@ test_labels = [ np.argmax(test_labels[i]).item() for i in range(len(test_labels)
 
 #(train_images, train_labels), (test_images, test_labels) = fashion_mnist.load_data()
 
-
-"""
-class_names = ['T-shirt', 'Trouser', 'Pullover', 'Dress', 'Coat',
-			'Sandal', 'Shirt', 'Sneaker', 'Bag', 'Ankleboot']
-"""
-
 class_names = ['0','1', '2', '3', '4', '5', '6', '7', '8', '9']
-
-
-"""
-print(test_images.shape)
-pr# int(len(test_images))
-
-plt.figure()
-plt.imshow(test_images[1])
-plt.colorbar()
-plt.grid(False)
-plt.show()
-"""
-
-"""
-plt.figure(figsize=(15, 15))
-for i in range(25):
-	plt.subplot(5, 5, i+1)
-	plt.xticks([])
-	plt.yticks([])
-	plt.grid(False)
-	plt.imshow(train_images[i])
-	#plt.imshow(train_images[i], cmap = plt.cm.binary)
-	plt.colorbar()
-	plt.xlabel(class_names[train_labels[i]])
-plt.show()
-"""
-
-"""
-print(train_images.shape)
-#print(train_labels)
-print(type(train_labels))
-print(type(train_labels[0]))
-"""
 
 # Setup the layers.
 model = keras.Sequential([
@@ -151,18 +107,8 @@ def plot_value_array(i, predictions_array, true_label):
 	thisplot[predicted_label].set_color('red')
 	thisplot[true_label].set_color('blue')
 
-"""
-i = 12
-plt.figure(figsize = (6, 3))
-plt.subplot(1, 2, 1)
-plot_image(i, predictions, test_labels, test_images)
-plt.subplot(1, 2, 2)
-plot_value_array(i, predictions, test_labels)
-plt.show()
-"""
-
-num_rows = 10
-num_cols = 8
+num_rows = 5
+num_cols = 4
 num_images = num_rows * num_cols
 
 plt.figure(figsize=(2 * 2 * num_cols, 2 * num_rows))
