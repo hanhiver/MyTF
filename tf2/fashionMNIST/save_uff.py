@@ -43,6 +43,11 @@ model.fit(train_images, train_labels, epochs=3)
 model.summary()
 
 print("Save model. ")
+
+#model.save_weights('./checkpoints/my_checkpoint')
+model.save('saved_model/my_model')
+
+"""
 K.set_learning_phase(0)
 sess = K.get_session()
 saver = saver_lib.Saver(write_version=saver_pb2.SaverDef.v2)
@@ -56,6 +61,7 @@ freeze_graph.freeze_graph('./tmp.pb', '',
                       	False, checkpoint_path, out_names,
                       	"save/restore_all", "save/Const:0",
                       	models_dir+model_filename, False, "")
+"""
 
 test_loss, test_acc = model.evaluate(test_images, test_labels, verbose=2)
 print('\nTest accuracy: ', test_acc)
