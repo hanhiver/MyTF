@@ -2,6 +2,14 @@ import os
 import tensorflow as tf  
 from tensorflow import keras
 
+from keras.models import load_model
+import keras.backend as K
+from tensorflow.python.framework import graph_io
+from tensorflow.python.tools import freeze_graph
+from tensorflow.core.protobuf import saver_pb2
+from tensorflow.python.training import saver as saver_lib
+
+
 # Set the GPU environment. 
 # Use 50% gpu memory. 
 # import tensorflow.keras.backend.tensorflow_backend as ktf
@@ -61,6 +69,28 @@ plt.plot(range(len(history.history['loss'])), history.history['loss'])
 """
 loss_metrics = model.evaluate(x_train, y_labels, batch_size = 1)
 print(loss_metrics)
+"""
+
+# Save the model to pb file. 
+keras.backend.learning_phase()
+saver = saver_lib.Saver(write_version=saver_pb2.SaverDef.V2)
+checkpoint_path = saver.save(sess, 'saved_ckpt', global_step=0, 
+							 latest_filename='checkpoint_state')
+graph_io.write_graph(sess.graph, '.', 'tmp.pb')
+freeze_graph('./tmp.pb', '', 
+			 False, checkpoint_path, "xor_model", 
+			 'save/restore_all', 'save/Const:0', 
+			 './xor.pb', False, "")
+"""
+keras.backend.learning_phase()
+saver = tf.python.training.saver.Saver(write_version=saver_pb2.SaveDef.v2)
+checkpoint_path = saver.save(sess, 'saved_ckpt', global_step=0, 
+							 latest_filename='checkpoint_state')
+tf.python.framework.graph_io.write_graph(sess.graph, '.', 'tmp.pb')
+tf.python.tools.freeze_graph('./tmp.pb', '', 
+							 False, checkpoint_path, out_names, 
+							 'save/restore_all', 'save/Const:0', 
+							 models_dir+model_filename, False, "")
 """
 
 print(model.predict(x_train))
