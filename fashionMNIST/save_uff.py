@@ -69,3 +69,43 @@ print('\nTest accuracy: ', test_acc)
 
 predictions = model.predict(test_images)
 
+def saveModel(self, export_version, export_path = 'prod_model'):
+    print('==S== Save Model: version {} to {} ==S=='.format(export_version, export_path))
+    print(type(self.yolo_model))
+    print("==S== Model Input: {}".format(self.yolo_model.input))
+    print("==S== Model Output: {}".format(self.yolo_model.output))
+    #print("==S== Model Summary: ")
+    self.yolo_model.summary()
+
+    """
+    signature = tf.saved_model.signature_def_utils.predict_signature_def(
+        inputs={'image': self.yolo_model.input}, 
+        outputs={'boxes': self.yolo_model.output[0], 
+                    'scores': self.yolo_model.output[1], 
+                    'classes': self.yolo_model.output[2]})
+    
+    """
+    signature = tf.saved_model.signature_def_utils.predict_signature_def(
+        inputs={'image': self.yolo_model.input, 
+                'image_shape': self.input_image_shape, 
+                'learning_phase': tf.constant(0, dtype = tf.float32)}, 
+        outputs={'boxes': self.boxes, 
+                    'scores': self.scores, 
+                    'classes': self.classes})
+    
+
+    export_path = os.path.join(tf.compat.as_bytes(export_path), 
+                                tf.compat.as_bytes(str(export_version)))
+
+    builder = tf.saved_model.builder.SavedModelBuilder(export_path)
+
+    legacy_init_op = tf.group(tf.tables_initializer(), name='legacy_init_op')
+    
+    builder.add_meta_graph_and_variables(
+                sess = self.sess,
+                tags = [tf.saved_model.tag_constants.SERVING],
+                signature_def_map = {'high_way_detector': signature, },
+                legacy_init_op = legacy_init_op)
+
+    #builder.save()
+    print('==S== Model saved SUCCESSFULLY!!! ')

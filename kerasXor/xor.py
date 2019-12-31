@@ -1,6 +1,7 @@
 import os 
 import tensorflow as tf  
-from tensorflow import keras
+#from tensorflow import keras
+import keras 
 
 from keras.models import load_model
 import keras.backend as K
@@ -58,20 +59,32 @@ history = model.fit(
 history = model.fit(
 	x_train, 
 	y_labels, 
-	batch_size = 4,
+	batch_size = 2,
 	epochs = 500, 
 	verbose = 2, 
 	)
 
 #plt.scatter(range(len(history.history['loss'])), history.history['loss'])
-plt.plot(range(len(history.history['loss'])), history.history['loss'])
+#plt.plot(range(len(history.history['loss'])), history.history['loss'])
 
 """
 loss_metrics = model.evaluate(x_train, y_labels, batch_size = 1)
 print(loss_metrics)
 """
+# Save the model files. 
+# Save to .h5 files. 
+model_save_path = './models/xor.h5'
+model.save(model_save_path)
+model.summary()
+print(model.to_yaml())
+
+#del model
+#from keras.models import load_model
+model2 = load_model(model_save_path)
+model2.summary()
 
 # Save the model to pb file. 
+"""
 keras.backend.learning_phase()
 saver = saver_lib.Saver(write_version=saver_pb2.SaverDef.V2)
 checkpoint_path = saver.save(sess, 'saved_ckpt', global_step=0, 
@@ -82,16 +95,6 @@ freeze_graph('./tmp.pb', '',
 			 'save/restore_all', 'save/Const:0', 
 			 './xor.pb', False, "")
 """
-keras.backend.learning_phase()
-saver = tf.python.training.saver.Saver(write_version=saver_pb2.SaveDef.v2)
-checkpoint_path = saver.save(sess, 'saved_ckpt', global_step=0, 
-							 latest_filename='checkpoint_state')
-tf.python.framework.graph_io.write_graph(sess.graph, '.', 'tmp.pb')
-tf.python.tools.freeze_graph('./tmp.pb', '', 
-							 False, checkpoint_path, out_names, 
-							 'save/restore_all', 'save/Const:0', 
-							 models_dir+model_filename, False, "")
-"""
 
-print(model.predict(x_train))
-plt.show()
+#print(model.predict(x_train))
+#plt.show()
