@@ -76,12 +76,11 @@ print(loss_metrics)
 model_save_path = './models/xor.h5'
 model.save(model_save_path)
 model.summary()
-print(model.to_yaml())
 
-#del model
-#from keras.models import load_model
-model2 = load_model(model_save_path)
-model2.summary()
+print("Input is: ", model.input.name)
+print("Output is: ", model.output.name)
+#model2 = load_model(model_save_path)
+#model2.summary()
 
 # Save the model to pb file. 
 """
