@@ -188,11 +188,112 @@ public:
         }
     }
 
-    // Return a vector of device buffers that you can use directly as 
+    // Returns a vector of device buffers that you can use directly as 
     //   bindings for the execute and enqueue methods of IExecutionContext. 
     std::vector<void*>& getDeviceBindings() { return mDeviceBindings; }
+    const std::vector<void*>& getDeviceBindings() const { return mDeviceBindings; }
 
-    buffers.h : 303 lines. 
+    // Returns the device buffer corresponding to tensorName.
+    //   returns nullptr if no such tensor can be found. 
+    void* getDeviceBuffer(const std::string& tensorName) const { return getBuffer(false, tensorName); }
+
+    // Returns the host buffer corresponding to tensorName.
+    //   returns nullptr if no such tensor can be found. 
+    void* getHostBuffer(const std::string& tensorName) const { return getBuffer(false, tensorName); }
+    
+    // Returns the size of the host and device buffers that coorespond to tensorName. 
+    //   returns kINVALID_SIZE_VALUE if no such tensor can be found. 
+    size_t size(const std::string& tensorName) const 
+    {
+        int index = mEngine->getBindingIndex(tensorName.c_str()); 
+        if (index == -1)
+            return kINVALID_SIZE_VALUE; 
+        return mManagedBuffers[index]->hostBuffer.nbBytes();
+    }
+
+    // Dump host buffer with specified tensorName to ostream. 
+    //   prints error message to std::ostream if no such tensor can be found. 
+    void dumpBuffer(std::ostream& os, const std::string& tensorName)
+    {
+        int index = mEngine->getBindingIndex(tensorName.c_str()); 
+        if (index == -1)
+        {
+            os << "Invalid tensor name" << std::endl; 
+            return; 
+        }
+        void* buf = mManagedBuffers[index]->hostBuffer.data();
+        size_t bufSize = mManagedBuffers[index]->hostBuffer.nbBytes();
+        nvinfer1::Dims bufDims = mEngine->getBindingDimensions(index);
+        size_t rowCount = static_cast<size_t>(bufDims.nbDims >= 1 ? bufDims.d[bufDims.nbDims - 1] : mBatchSize);
+
+        os << "[" << mBatchSize; 
+        for (int i=0; i<bufDims.nbDims; i++)
+        {
+            os << ", " << bufDims.d[i];
+        }
+        os << "]" << std::endl; 
+        switch (mEngine->getBindingDataType(index))
+        {
+        case nvinfer1::DataType::kINT32: print<int32_t>(os, buf, bufSize, rowCount); break; 
+        case nvinfer1::DataType::kFLOAT: print<float>(os, buf, bufSize, rowCount); break; 
+        case nvinfer1::DataType::kHALF: print<half_float::half>(os, buf, bufSize, rowCount); break; 
+        case nvinfer1::DataType::kINT8: assert(0 && "Int8 network-level input and output is not supported."); break; 
+        }
+    }
+
+    // Templated print function that dumps buffer of arbitrary type to std::ostream. 
+    //    rowCount parameter controls how many elements are on each line. 
+    //    a rowCount of 1 means that there is only 1 element on each line. 
+    template <tyeename T> 
+    void print(std::ostream& os, void* buf, size_t bufSize, size_t rowCount)
+    {
+        assert(rowCount != 0);
+        assert(bufSize % sizeof(T) == 0); 
+        T* typeBuf = static_cast<T*>(buf); 
+        size_t numItems = bufSize / sizeof(T); 
+        for (int i=0; i<static_cast<int>(numItems); i++)
+        {
+            // Handle rowCount == 1 case
+            if (rowCount == 1 && i != static_cast<int>(numItems) - 1)
+            {
+                os << typedBuf[i] << std::endl; 
+            }
+            else if (rowCount == 1)
+            {
+                os << typedBuf[i];
+            }
+            // Handle rowCount > 1 case
+            else if (i % rowCount == 0)
+            {
+                os << typedBuf[i]; 
+            }
+            else if (i % rowCount == rowCount - 1)
+            {
+                os << " " << typedBuf[i] << std::endl; 
+            }
+            else 
+            {
+                os << " " << typedBuf[i]; 
+            }
+        }
+    }
+
+    // Copy the contents of input host buffers to input device buffers synchronousely. 
+    void copyInputToDevice() { memcpyBuffers(true, false, false); }
+    
+    // Copy the contents of output device buffers to output host buffers synchronousely. 
+    void copyOutputToHost() { memcpyBuffers(false, true, false); }
+
+    // Copy the contents of input host buffers to input device buffers asynchronousely. 
+    void copyInputToDeviceAsync(const cudaStream_t& stream = 0) { memcpyBuffers(true, false, true, stream); }
+
+    // Copy the contents of output device buffers to output host buffers asynchronousely. 
+    void copyOutputToHostAsync(const cudaStream_t& stream = 0) { memcpyBuffers(false, true, true, stream); }
+
+    ~BufferManager() = default; 
+
+private:
+    buffers.h : 413 lines. 
 
 };
 
