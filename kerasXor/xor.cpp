@@ -293,10 +293,50 @@ public:
     ~BufferManager() = default; 
 
 private:
-    buffers.h : 413 lines. 
 
+    void* getBuffer(const bool isHost, const std::string& tensorName) const 
+    {
+        int index = mEngine->getBindingIndex(tensorName.c_str());
+        if (index == -1)
+        {
+            return nullptr; 
+        }
+        return (ishost ? mManagedBuffers[index]->hostBuffer.data() : mManagedBuffers[index]->deviceBuffer.data());
+    }
+
+    void memcpyBuffers(const bool copyInput, const bool deviceToHost, const bool async, const cudaStream_t& stream = 0)
+    {
+        for (int i=0; i<mEngine->getNbBindings(); i++)
+        {
+            void* dstPtr = 
+                deviceToHost ? mManagedBuffers[i]->hostBuffer.data() : mManagedBuffers[i]->deviceBuffers.data();
+            const void* srcPtr =
+                deviceToHost ? mManagedBuffers[i]->deviceBuffer.data() : mManagedBuffers[i]->hostBuffers.data();
+            const size_t byteSize = mManagedBuffers[i]->hostBuffer.nbBytes();
+            const cudaMemcpKind memcpyType = deviceToHost ? cudaMemcpyDeviceToHost : cudaMemcpyHostToDevice;
+            if ((copyInput && mEngine->bindingIsInput(i)) || (!copyInput && !mEngine->bindingIsInput(i)))
+            {
+                if (async)
+                {
+                    CHECK(cudaMemcpyAsync(dstPtr, srcPtr, byteSize, memcpyType, stream));
+                }
+                else
+                {
+                    CHECK(cudaMemcpy(dstPtr, srcPtr, byteSize, memcpyType));
+                }
+                
+            }
+        }
+    }
+
+    std::shared_ptr<nvinfer1::ICudaEngine> mEngine;
+    int mBatchSize; 
+    std::vector<std::unique_ptr<ManagedBuffer>> mManagedBuffers; 
+    std::vecotor<void*> mDeviceBindings;
 };
 
+// The SampleUffXor class implements the uff Xor example. 
+// It creates the network using a uff model. 
 class SampleUffXor
 {
     template <typename T>
@@ -319,5 +359,28 @@ private:
     
     // Reads the input and mean data, preprocesses, and stores the result
     //    in a managed buffer. 
-    bool processInput(XXX); 
+    bool processInput(const BufferManager& buffers, 
+                      const std::string& inputTensorName, int inputFileIdx) const;
+
+    // Verifies that the output is correct and prints it. 
+    bool verifyOutput(const BufferManager& buffers, 
+                      const std::string& outputTensorName, 
+                      int groundTruthDigit) const; 
+
+    std::shared_ptr<nvinfer::ICudaEngine> mEngine {nullptr}; 
+    UffSampleParams mParams; 
+    nvinfer1:Dims mInputDims; 
+    const int kDIGITS {10};
+}; // SampleUffXor
+
+// Creates the network, configure the builder and create the network engine. 
+// This function creates the Xor network by parsing the Uff model and builds
+// the engine that will used to run Xor. 
+bool SampleUffXor::build()
+{
+    auto builder = SampleUniquePtr<nvinfer1::IBuilder>(nvinfer1::createInferBuilder(gLogger.getTRTLogger()));
+    if (!builder)
+    {
+        return false; 
+    }
 }
