@@ -58,6 +58,33 @@ inline unsigned int getElementSize(nvinfer1::DataType t)
     return 0;
 }
 
+inline void enableDLA(IBuilder* builder, IBuilderConfig* config, int useDLACore, bool allowGPUFallback=true)
+{
+    if (useDLACore >= 0)
+    {
+        if (builder->getNbDLACores() == 0)
+        {
+            std::cerr << "Trying to use DLA core " << useDLACore 
+                      << " on a platform that does not have any DLA cores" << std::endl; 
+            assert("Error: use DLA core on a platform that have no DLA cores" && false);
+        }
+        if (allowGPUFallback)
+        {
+            config->setFlag(BuilderFlag::kGPU_FALLBACK);
+        }
+        if (!builder->getInt8Mode() && !config->getFlag(BuilderFlag::kINT8))
+        {
+            // User has no requested INT8 mode. 
+            // By default run in FP16 mode. FP32 mode is not permitted. 
+            builder->setFp16Mode(true);
+            config->setFlag(builderFlag::kFP16);
+        }
+        config->setDefaultDeviceType(DeviceType::kDLA);
+        config->setDLACore(useDLACore);
+        config->setFlag(BuilderFlag::kSTRICT_TYPES);
+    }
+}
+
 template <typename AllocFunc, typename FreeFunc>
 class GenericBuffer
 {
@@ -378,9 +405,54 @@ private:
 // the engine that will used to run Xor. 
 bool SampleUffXor::build()
 {
-    auto builder = SampleUniquePtr<nvinfer1::IBuilder>(nvinfer1::createInferBuilder(gLogger.getTRTLogger()));
+    auto builder = SampleUniquePtr<nvinfer1::IBuilder>(
+        nvinfer1::createInferBuilder(gLogger.getTRTLogger()));
     if (!builder)
     {
         return false; 
     }
+    auto network = SampleUniquePtr<nvinfer1::INetworkDefinition>(builder->createNetwork());
+    if (!network)
+    {
+        return false; 
+    }
+    auto config = SampleUniquePtr<nvinfer1::IBuilderConfig>(builder->createBuilderConfig());
+    if (!config)
+    {
+        return false; 
+    }
+    auto parser = SampleUniquePtr<nvinfer1::IUffParser>(nvuffparser::createUffParser());
+    if (!parser)
+    {
+        return false; 
+    }
+    constructNetwork(parser, network);
+    builder->setMaxBatchSize(mParams.batchSize);
+    config->setMaxWorkspaceSize(16_MiB);
+    config->setFlag(BuilderFlag::kGPU_FALLBACK);
+    if (mParams.fp16)
+    {
+        config->setFlag(BuilderFlag::kFP16); 
+    }
+    if (mParams.int8)
+    {
+        config-setFlag(BuilderFlag::kINT8);
+    }
+
+    enableDLA(builder.get(), config.get(), mParams.dlaCore);
+
+    mEngine = std::shared_ptr<nvinfer1::ICudaEngine>(
+        builder->buildEngineWithConfig(*network, *config), InferDeleter());
+    
+    if (!mEngine)
+    {
+        return false; 
+    }
+    assert(network->getNbInputs() == 1);
+    mInputDims = networkInput(0)->getDimensions();
+    assert(mInputDims.nbDims == 3);
+
+    return true; 
 }
+
+// Use a Uff parser to create network and marks the output layers. 
